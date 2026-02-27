@@ -1,106 +1,14 @@
-import { computed, ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
 import Papa from 'papaparse'
-import { z } from 'zod'
-
-const emailSchema = z.string().trim().email()
-
-const volunteerSchema = z.object({
-  id: z.string().min(1),
-  firstname: z.string().trim().min(1),
-  lastname: z.string().trim().min(1),
-  email: z.string().trim().email(),
-  phone: z.string().trim(),
-  groups: z.array(z.string()),
-  notes: z.string().trim()
-})
-
-const groupSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().trim().min(1)
-})
-
-const storageSchema = z.object({
-  volunteers: z.array(volunteerSchema),
-  groups: z.array(groupSchema)
-})
-
-const csvRowSchema = z.object({
-  firstname: z.string().optional(),
-  lastname: z.string().optional(),
-  email: z.string().optional(),
-  phone: z.string().optional(),
-  groups: z.string().optional(),
-  notes: z.string().optional()
-})
-
-export type Volunteer = z.infer<typeof volunteerSchema>
-export type Group = z.infer<typeof groupSchema>
-export type StorageSchema = z.infer<typeof storageSchema>
-
-export interface VolunteerInput {
-  firstname: string
-  lastname: string
-  email: string
-  phone?: string
-  groups?: string[]
-  notes?: string
-}
-
-export interface ImportSummary {
-  imported: number
-  skipped: number
-  errors: string[]
-}
-
-function normalizeEmail(email: string) {
-  return email.trim().toLowerCase()
-}
-
-function normalizeGroupName(name: string) {
-  return name.trim().toLowerCase()
-}
-
-function createId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
+import type { CsvRow, ImportSummary, Volunteer, VolunteerInput } from '~/utils/volunteer-types'
+import { createEntityId, normalizeEmail, normalizeGroupName } from '~/utils/volunteer-helpers'
+import { csvRowSchema, emailSchema, volunteerSchema } from '~/utils/volunteer-schemas'
+import { useVolunteerStorage } from '~/composables/useVolunteerStorage'
 
 export function useVolunteers() {
-  const storage = useLocalStorage<StorageSchema>('volunteer-manager', {
-    volunteers: [],
-    groups: []
-  })
+  const { volunteers, groups } = useVolunteerStorage()
 
-  const parsedStorage = storageSchema.safeParse(storage.value)
-  if (!parsedStorage.success) {
-    storage.value = {
-      volunteers: [],
-      groups: []
-    }
-  }
-
-  const selectedVolunteerIds = ref<string[]>([])
-  const searchQuery = ref('')
-
-  const volunteers = computed({
-    get: () => storage.value.volunteers,
-    set: (nextVolunteers: Volunteer[]) => {
-      storage.value = {
-        ...storage.value,
-        volunteers: nextVolunteers
-      }
-    }
-  })
-
-  const groups = computed({
-    get: () => storage.value.groups,
-    set: (nextGroups: Group[]) => {
-      storage.value = {
-        ...storage.value,
-        groups: nextGroups
-      }
-    }
-  })
+  const selectedVolunteerIds = useState<string[]>('volunteer-selected-ids', () => [])
+  const searchQuery = useState<string>('volunteer-search-query', () => '')
 
   const groupsById = computed(() => {
     return new Map(groups.value.map(group => [group.id, group]))
@@ -187,7 +95,7 @@ export function useVolunteers() {
     }
 
     const volunteer: Volunteer = {
-      id: createId('volunteer'),
+      id: createEntityId('volunteer'),
       ...payload
     }
 
@@ -235,71 +143,6 @@ export function useVolunteers() {
   function deleteVolunteer(id: string) {
     volunteers.value = volunteers.value.filter(volunteer => volunteer.id !== id)
     selectedVolunteerIds.value = selectedVolunteerIds.value.filter(selectedId => selectedId !== id)
-  }
-
-  function createGroup(name: string) {
-    const trimmedName = name.trim()
-
-    if (!trimmedName) {
-      return { ok: false as const, error: 'Gruppenname ist erforderlich.' }
-    }
-
-    const normalized = normalizeGroupName(trimmedName)
-    if (groups.value.some(group => normalizeGroupName(group.name) === normalized)) {
-      return { ok: false as const, error: 'Die Gruppe existiert bereits.' }
-    }
-
-    const group: Group = {
-      id: createId('group'),
-      name: trimmedName
-    }
-
-    groups.value = [...groups.value, group]
-
-    return { ok: true as const, group }
-  }
-
-  function renameGroup(id: string, name: string) {
-    const trimmedName = name.trim()
-    if (!trimmedName) {
-      return { ok: false as const, error: 'Gruppenname ist erforderlich.' }
-    }
-
-    const normalized = normalizeGroupName(trimmedName)
-    if (groups.value.some(group => group.id !== id && normalizeGroupName(group.name) === normalized)) {
-      return { ok: false as const, error: 'Die Gruppe existiert bereits.' }
-    }
-
-    let didUpdate = false
-
-    groups.value = groups.value.map((group) => {
-      if (group.id !== id) {
-        return group
-      }
-
-      didUpdate = true
-      return {
-        ...group,
-        name: trimmedName
-      }
-    })
-
-    if (!didUpdate) {
-      return { ok: false as const, error: 'Gruppe nicht gefunden.' }
-    }
-
-    return { ok: true as const }
-  }
-
-  function deleteGroup(id: string) {
-    groups.value = groups.value.filter(group => group.id !== id)
-
-    volunteers.value = volunteers.value.map((volunteer) => {
-      return {
-        ...volunteer,
-        groups: volunteer.groups.filter(groupId => groupId !== id)
-      }
-    })
   }
 
   function toggleVolunteerSelection(id: string) {
@@ -369,7 +212,7 @@ export function useVolunteers() {
     const usedEmails = new Set(nextVolunteers.map(volunteer => normalizeEmail(volunteer.email)))
 
     for (const [index, row] of result.data.entries()) {
-      const safeRow = csvRowSchema.safeParse(row)
+      const safeRow = csvRowSchema.safeParse(row as CsvRow)
       if (!safeRow.success) {
         skipped += 1
         errors.push(`Zeile ${index + 2}: Ungültige Struktur.`)
@@ -411,7 +254,7 @@ export function useVolunteers() {
         let groupId = groupIdByNormalizedName.get(normalizedName)
 
         if (!groupId) {
-          groupId = createId('group')
+          groupId = createEntityId('group')
           nextGroups.push({ id: groupId, name: groupName })
           groupIdByNormalizedName.set(normalizedName, groupId)
         }
@@ -420,7 +263,7 @@ export function useVolunteers() {
       }
 
       const volunteer: Volunteer = {
-        id: createId('volunteer'),
+        id: createEntityId('volunteer'),
         firstname,
         lastname,
         email,
@@ -453,23 +296,19 @@ export function useVolunteers() {
 
   return {
     volunteers,
-    groups,
-    selectedVolunteerIds,
     searchQuery,
     filteredVolunteers,
+    selectedVolunteerIds,
     selectedEmails,
     createVolunteer,
     updateVolunteer,
     deleteVolunteer,
-    createGroup,
-    renameGroup,
-    deleteGroup,
     toggleVolunteerSelection,
     clearSelection,
     selectAllFiltered,
     selectVolunteersByGroupIds,
+    getGroupNameList,
     exportVolunteersToCsv,
-    importVolunteersFromCsv,
-    getGroupNameList
+    importVolunteersFromCsv
   }
 }

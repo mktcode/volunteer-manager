@@ -1,0 +1,66 @@
+<script setup lang="ts">
+import type { ImportSummary } from '~/utils/volunteer-types'
+
+defineProps<{
+  importSummary: ImportSummary | null
+}>()
+
+const emit = defineEmits<{
+  importFile: [file: File]
+  exportCsv: []
+}>()
+
+function onFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) {
+    return
+  }
+
+  emit('importFile', file)
+  input.value = ''
+}
+</script>
+
+<template>
+  <section class="space-y-3">
+    <h2 class="text-lg font-medium text-highlighted">
+      CSV Import / Export
+    </h2>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <input
+        type="file"
+        accept=".csv,text/csv"
+        @change="onFileChange"
+      >
+
+      <UButton
+        label="CSV exportieren"
+        color="neutral"
+        variant="soft"
+        @click="emit('exportCsv')"
+      />
+    </div>
+
+    <div
+      v-if="importSummary"
+      class="space-y-2 text-sm"
+    >
+      <p>
+        Importiert: {{ importSummary.imported }} · Übersprungen: {{ importSummary.skipped }}
+      </p>
+      <ul
+        v-if="importSummary.errors.length"
+        class="list-disc space-y-1 pl-5 text-error"
+      >
+        <li
+          v-for="message in importSummary.errors"
+          :key="message"
+        >
+          {{ message }}
+        </li>
+      </ul>
+    </div>
+  </section>
+</template>

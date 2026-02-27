@@ -48,14 +48,14 @@ function onSelectByGroups() {
     </div>
 
     <div class="flex flex-col gap-2">
-      <p class="text-sm text-muted">
+      <p class="text-muted">
         Auswahl nach Gruppe:
       </p>
       <div class="flex flex-wrap gap-4">
         <label
           v-for="option in groupOptions"
           :key="option.value"
-          class="inline-flex items-center gap-2 text-sm"
+          class="inline-flex items-center gap-2"
         >
           <input
             v-model="selectedGroupIdsForBulk"
@@ -88,13 +88,13 @@ function onSelectByGroups() {
       />
       <span
         v-if="copied"
-        class="text-sm text-success"
+        class="text-success"
       >
         Kopiert
       </span>
       <span
         v-else-if="!isSupported"
-        class="text-sm text-error"
+        class="text-error"
       >
         Zwischenablage wird vom Browser nicht unterstützt.
       </span>

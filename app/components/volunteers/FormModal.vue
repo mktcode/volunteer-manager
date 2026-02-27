@@ -103,14 +103,14 @@ function onSubmit() {
           />
 
           <div class="flex flex-col gap-2">
-            <p class="text-sm text-muted">
+            <p class="text-muted">
               Gruppen
             </p>
             <div class="flex flex-wrap gap-4">
               <label
                 v-for="option in groupOptions"
                 :key="option.value"
-                class="inline-flex items-center gap-2 text-sm"
+                class="inline-flex items-center gap-2"
               >
                 <input
                   v-model="form.groups"
@@ -130,7 +130,7 @@ function onSubmit() {
 
           <p
             v-if="internalError || externalError"
-            class="text-sm text-error"
+            class="text-error"
           >
             {{ internalError || externalError }}
           </p>

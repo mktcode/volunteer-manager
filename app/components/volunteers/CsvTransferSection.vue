@@ -45,7 +45,7 @@ function onFileChange(event: Event) {
 
     <div
       v-if="importSummary"
-      class="flex flex-col gap-2 text-sm"
+      class="flex flex-col gap-2"
     >
       <p>
         Importiert: {{ importSummary.imported }} · Übersprungen: {{ importSummary.skipped }}

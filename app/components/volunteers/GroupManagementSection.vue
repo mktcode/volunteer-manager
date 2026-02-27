@@ -66,7 +66,7 @@ function onSaveRename() {
 
     <p
       v-if="errorMessage"
-      class="text-sm text-error"
+      class="text-error"
     >
       {{ errorMessage }}
     </p>

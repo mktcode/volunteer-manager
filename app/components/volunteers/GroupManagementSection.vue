@@ -95,7 +95,7 @@ function onSaveRename() {
         </template>
 
         <template v-else>
-          <span class="text-sm mr-auto">{{ group.name }}</span>
+          <span class="mr-auto">{{ group.name }}</span>
           <UButton
             label="Umbenennen"
             color="neutral"

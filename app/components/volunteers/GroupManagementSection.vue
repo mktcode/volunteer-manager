@@ -94,7 +94,7 @@ function onSaveRename() {
               @click="editingGroupId = null"
             />
           </template>
-  
+
           <template v-else>
             <span class="w-full md:w-auto md:mr-auto">{{ group.name }}</span>
             <UButton
@@ -114,7 +114,10 @@ function onSaveRename() {
           </template>
         </div>
       </TransitionGroup>
-      <div v-if="groups.length === 0" class="text-gray-500">
+      <div
+        v-if="groups.length === 0"
+        class="text-gray-500"
+      >
         Noch keine Gruppen vorhanden.
       </div>
     </div>

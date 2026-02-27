@@ -115,7 +115,7 @@ function onRenameGroup(payload: { id: string, name: string }) {
 }
 
 function removeGroupWithConfirm(id: string) {
-  if (!window.confirm('Soll diese Gruppe wirklich gelöscht werden?')) {
+  if (!window.confirm('Soll diese Gruppe wirklich gelöscht werden? Personen in dieser Gruppe werden dadurch nicht gelöscht, verlieren aber die Gruppenzuordnung.')) {
     return
   }
 

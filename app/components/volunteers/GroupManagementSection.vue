@@ -72,46 +72,48 @@ function onSaveRename() {
     </p>
 
     <div class="flex flex-col gap-2">
-      <div
-        v-for="group in groups"
-        :key="group.id"
-        class="flex flex-wrap items-center gap-2 border border-gray-100 rounded-md px-3 py-2"
-      >
-        <template v-if="editingGroupId === group.id">
-          <UInput
-            v-model="editingGroupName"
-            class="min-w-56 mr-auto"
-          />
-          <UButton
-            label="Speichern"
-            @click="onSaveRename"
-          />
-          <UButton
-            label="Abbrechen"
-            color="neutral"
-            variant="soft"
-            @click="editingGroupId = null"
-          />
-        </template>
-
-        <template v-else>
-          <span class="w-full md:w-auto md:mr-auto">{{ group.name }}</span>
-          <UButton
-            label="Umbenennen"
-            icon="i-lucide-edit"
-            color="neutral"
-            variant="soft"
-            @click="beginRenameGroup(group.id, group.name)"
-          />
-          <UButton
-            label="Löschen"
-            icon="i-lucide-trash-2"
-            color="error"
-            variant="soft"
-            @click="emit('deleteGroup', group.id)"
-          />
-        </template>
-      </div>
+      <TransitionGroup name="list">
+        <div
+          v-for="group in groups"
+          :key="group.id"
+          class="flex flex-wrap items-center gap-2 border border-gray-100 rounded-md px-3 py-2"
+        >
+          <template v-if="editingGroupId === group.id">
+            <UInput
+              v-model="editingGroupName"
+              class="min-w-56 mr-auto"
+            />
+            <UButton
+              label="Speichern"
+              @click="onSaveRename"
+            />
+            <UButton
+              label="Abbrechen"
+              color="neutral"
+              variant="soft"
+              @click="editingGroupId = null"
+            />
+          </template>
+  
+          <template v-else>
+            <span class="w-full md:w-auto md:mr-auto">{{ group.name }}</span>
+            <UButton
+              label="Umbenennen"
+              icon="i-lucide-edit"
+              color="neutral"
+              variant="soft"
+              @click="beginRenameGroup(group.id, group.name)"
+            />
+            <UButton
+              label="Löschen"
+              icon="i-lucide-trash-2"
+              color="error"
+              variant="soft"
+              @click="emit('deleteGroup', group.id)"
+            />
+          </template>
+        </div>
+      </TransitionGroup>
       <div v-if="groups.length === 0" class="text-gray-500">
         Noch keine Gruppen vorhanden.
       </div>

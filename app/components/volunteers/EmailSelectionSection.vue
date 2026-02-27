@@ -69,6 +69,7 @@ function onSelectByGroups() {
         label="Freiwillige aus gewählten Gruppen auswählen"
         color="neutral"
         variant="soft"
+        class="w-fit"
         @click="onSelectByGroups"
       />
     </div>

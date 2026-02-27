@@ -1,37 +1,32 @@
-# Volunteer Management App – Implementation Plan
+# Volunteer Management App – MVP Implementation Plan
 
-## 1. Project Constraints
+## 1. Scope and Constraints
 
-* Nuxt 4 application
-* Client-side only (no server routes, no SSR logic for this feature)
-* Data persistence via `localStorage` (https://vueuse.org/core/useLocalStorage/)
-* CSV import/export handled fully in the browser
-* UI language: German
-* UI framework: Nuxt UI (https://ui.nuxt.com/llms.txt)
-* Clipboard handling via https://vueuse.org/core/useClipboard
+- Nuxt 4 application.
+- Client-side only for this feature set (no server routes, no backend persistence).
+- Data persistence via `localStorage` using `useLocalStorage`.
+- Clipboard copy via `useClipboard`.
+- CSV import/export fully in the browser.
+- Vaidation via `zod`.
+- UI language: German.
+- UI framework: Nuxt UI only.
+- Keep implementation minimal: no extra pages, no extra features beyond this plan.
+- Package manager: npm only.
 
 ---
 
-## 2. High-Level Architecture
+## 2. MVP Decisions (Simplified)
 
-### 2.1 Rendering Mode
-
-* All pages/components for this feature use client components only.
-* Disable SSR where necessary (`definePageMeta({ ssr: false })` if needed).
-
-### 2.2 State Management
-
-Use a composable as a lightweight client-side store:
-
-* `composables/useVolunteers.ts`
-* Reactive state using `ref` / `computed`
-* Persist and hydrate from `localStorage` (via the reactive `useLocalStorage` composable)
+- The volunteer manager replaces the current home page (`/`) in `app/pages/index.vue`.
+- One composable store for all feature state (`composables/useVolunteers.ts`).
+- One `localStorage` root key (`volunteer-manager`).
+- Group CRUD is included (create, rename, delete).
+- Email uniqueness is a hard global rule (manual create/edit and CSV import).
+- Future ideas from `docs/DISCUSSION.md` stay out of scope.
 
 ---
 
 ## 3. Data Model
-
-### 3.1 Volunteer
 
 ```ts
 interface Volunteer {
@@ -40,232 +35,178 @@ interface Volunteer {
   lastname: string
   email: string
   phone: string
-  groups: string[]   // group ids
+  groups: string[] // group ids
   notes: string
-  createdAt: string
-  updatedAt: string
 }
-```
 
-### 3.2 Group
-
-```ts
 interface Group {
   id: string
   name: string
-  createdAt: string
 }
-```
 
-### 3.3 Root Storage Structure
-
-```ts
 interface StorageSchema {
   volunteers: Volunteer[]
   groups: Group[]
 }
 ```
 
-Stored under a single `localStorage` key, e.g.:
-
-```
-zoo-volunteer-manager
-```
+Notes:
+- `createdAt` / `updatedAt` are not required for MVP.
+- IDs can be generated client-side with a simple deterministic approach.
 
 ---
 
-## 4. Core Features
+## 4. State Management
 
-### 4.1 Volunteer Management
+Create `composables/useVolunteers.ts` as the single source of truth.
 
-Features:
+State:
+- `volunteers`
+- `groups`
+- `selectedVolunteerIds`
+- `searchQuery`
 
-* Create volunteer
-* Edit volunteer
-* Delete volunteer
-* Search (by name, email, notes)
-* Assign to one or multiple groups
+Derived:
+- `filteredVolunteers` (search in first name, last name, email, notes)
+- `selectedEmails` (deduplicated, comma-separated)
 
-UI Components (Nuxt UI):
+Actions:
+- Volunteer CRUD
+- Group CRUD
+- Assign/unassign groups on volunteers
+- Selection helpers (toggle one, clear all, select by group)
+- CSV import/export helpers
 
-* Form: `UForm`, `UInput`, `UTextarea`, `USelect`, `UButton`
-* `UTable` for listing volunteers
-* `UModal` for editing
-
-Search:
-
-* Client-side filtering via computed property
-* Debounced search input (optional)
-
----
-
-### 4.2 Group Management
-
-Features:
-
-* Create group
-* Rename group
-* Delete group
-* Assign volunteers to groups (from volunteer form and table view)
-
-Constraints:
-
-* Prevent duplicate group names
-* On group deletion, remove group reference from all volunteers (requires user confirmation)
+Persistence:
+- `useLocalStorage<StorageSchema>('volunteer-manager', { volunteers: [], groups: [] })`
+- Defensive fallback if loaded data shape is invalid.
 
 ---
 
-### 4.3 Email Selection & Copy
+## 5. UI Structure (Single Page)
 
-Requirements:
+Target file:
+- `app/pages/index.vue`
 
-* Select individual volunteers
-* Select all volunteers in one or multiple groups
-* Display selected emails in a text field
-* Copy button using `useClipboard`
+Sections (in this exact order):
+1. Header (title + primary actions)
+2. Search input
+3. Group management panel
+4. Volunteer table
+5. Email selection + copy panel
+6. CSV import/export panel
 
-Implementation:
+Nuxt UI components (minimal set):
+- `UForm`, `UInput`, `UTextarea`, `USelect` (or `USelectMenu`), `UTable`, `UModal`, `UButton`
 
-* Maintain `selectedVolunteerIds: Ref<string[]>`
-* Derived computed:
+No additional pages, dashboards, filters, or optional UX enhancements.
 
-  * `selectedEmails`
-  * Deduplicated email list
+---
 
-Output field:
+## 6. Feature Requirements
 
-* `UTextarea` (readonly)
-* Emails separated by comma for easy pasting into email clients
+### 6.1 Volunteer Management
 
-Copy:
+- Create, edit, delete volunteers.
+- Assign one or multiple groups.
+- Search client-side via computed filtering.
+
+### 6.2 Group Management
+
+- Create, rename, delete groups.
+- Prevent duplicate group names (case-insensitive trim check).
+- On group deletion, remove group id from all volunteers.
+- Require user confirmation before deletion.
+
+### 6.3 Email Selection and Copy
+
+- Select individual volunteers.
+- Select all volunteers for one or multiple groups.
+- Show resulting emails in a readonly textarea.
+- Copy button uses:
 
 ```ts
 const { copy, copied } = useClipboard()
 ```
 
-Button triggers `copy(selectedEmails.value)`.
+### 6.4 CSV Import (Browser Robust)
+
+- Use one browser-focused CSV library (recommended: Papa Parse).
+- File input accepts `.csv`.
+- Expected columns:
+  - `firstname`
+  - `lastname`
+  - `email`
+  - `phone`
+  - `groups` (comma-separated group names)
+  - `notes`
+
+Import behavior:
+- Validate required fields and email format.
+- Enforce global unique email rule.
+- Auto-create missing groups from parsed group names.
+- Add valid rows, skip invalid/duplicate rows.
+- Show summary: `imported`, `skipped`, `errors`.
+
+### 6.5 CSV Export
+
+- Export all volunteers.
+- Convert group ids to group names, joined by comma.
+- Generate CSV in browser and trigger download.
+- Filename:
+  - `freiwillige-helfer-osnabrueck.csv`
 
 ---
 
-### 4.4 CSV Import
+## 7. Validation Rules (MVP)
 
-* File input (`accept=".csv"`)
-* Parse client-side (via csv-stringify and csv-parser npm packages)
-* Expected columns:
+- `firstname`: required
+- `lastname`: required
+- `email`: required, valid format, globally unique
+- `phone`: optional
+- `group.name`: required, unique
 
-  * firstname
-  * lastname
-  * email
-  * phone
-  * groups (comma separated)
-  * notes
-
-Import Logic:
-
-* Create missing groups automatically
-* Generate IDs
-* Validate email format
-* Skip duplicates (optional rule: unique by email)
-
-Error handling:
-
-* Show summary (imported / skipped / errors)
+Validation is enforced in form handlers and import logic.
 
 ---
 
-### 4.5 CSV Export
+## 8. Implementation Order
 
-* Export all volunteers
-* Flatten group names into comma-separated string
-* Generate CSV string
-* Create Blob
-* Trigger download via anchor element
+1. Build `useVolunteers` composable with local storage persistence.
+2. Replace `app/pages/index.vue` with MVP layout sections.
+3. Implement volunteer CRUD + validation.
+4. Implement group CRUD + cascading cleanup on delete.
+5. Implement search filtering.
+6. Implement selection state + email copy.
+7. Implement CSV export.
+8. Implement CSV import + summary reporting.
+9. Final polish of German labels and confirmations.
 
-Filename example:
+---
 
+## 9. npm-Only Commands
+
+Install CSV dependency (when implementing):
+
+```bash
+npm install papaparse
 ```
-freiwillige-helfer-osnabrueck.csv
+
+Validation commands:
+
+```bash
+npm run lint
+npm run typecheck
 ```
 
 ---
 
-## 5. UI Structure
+## 10. Explicit Non-MVP Scope
 
-### Page Structure
-
-```
-pages/
-  volunteers.vue
-```
-
-Main layout sections:
-
-1. Header (Titel + Aktionen)
-2. Search bar
-3. Volunteer list
-4. Group management panel
-5. Email selection panel
-6. CSV import/export section
+Do not implement now:
+- Cloud storage/sync
+- Built-in email sending
+- Public announcements website
+- Any additional pages or optional enhancements
 
 ---
-
-## 6. Local Storage Strategy
-
-### Initialization
-
-* On composable init:
-
-  * Load from `localStorage`
-  * Validate structure
-  * Fallback to empty arrays
-
-### Persistence
-
-* `useLocalStorage` from `@vueuse/core` handles reactive syncing
-
----
-
-## 7. Validation Rules
-
-* Firstname: required
-* Lastname: required
-* Email: required, unique, valid format
-* Phone: optional
-* Group name: required, unique
-
-Validation handled via Nuxt UI form validation.
-
----
-
-## 8. UX Details
-
-* All UI labels in German
-* Clear primary actions
-* Confirmation dialog before deletion
-* Visual feedback after copy
-* Responsive layout
-
----
-
-## 9. Optional Enhancements (Future)
-
-* Tag-style group chips
-* Bulk select / select all
-* Export selected only
-
----
-
-## 10. Implementation Order
-
-1. Create composable with persistence
-2. Implement volunteer CRUD
-3. Implement group CRUD
-4. Implement search
-5. Implement selection + email copy
-6. Add CSV export
-7. Add CSV import
-8. Polish UI & validation
-
----
-
-End of Plan

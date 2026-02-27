@@ -171,16 +171,18 @@ function exportCsv() {
       @delete-group="removeGroupWithConfirm"
     />
 
-    <div class="flex items-center gap-4">
+    <div class="flex flex-col md:flex-row items-center gap-4">
       <h2 class="text-lg font-medium text-highlighted mr-auto">
         Freiwillige
       </h2>
-      <VolunteersSearchSection v-model="searchQuery" />
-      <UButton
-        label="Neue Person"
-        icon="i-lucide-plus"
-        @click="openCreateVolunteerModal"
-      />
+      <div class="flex items-center gap-2">
+        <VolunteersSearchSection v-model="searchQuery" />
+        <UButton
+          label="Neue Person"
+          icon="i-lucide-plus"
+          @click="openCreateVolunteerModal"
+        />
+      </div>
     </div>
 
     <VolunteersTableSection

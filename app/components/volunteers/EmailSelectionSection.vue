@@ -49,7 +49,7 @@ function onSelectByGroups() {
 
     <div class="flex flex-col gap-2">
       <p class="text-muted">
-        Auswahl nach Gruppe:
+        Auswahl nach Gruppe: <span v-if="groupOptions.length === 0">Noch keine Gruppen vorhanden.</span>
       </p>
       <div class="flex flex-wrap gap-4">
         <label
@@ -66,6 +66,7 @@ function onSelectByGroups() {
         </label>
       </div>
       <UButton
+        v-if="groupOptions.length > 0"
         label="Freiwillige aus gewählten Gruppen auswählen"
         color="neutral"
         variant="soft"

@@ -51,15 +51,15 @@ function onSaveRename() {
       Gruppen
     </h2>
 
-    <div class="flex flex-wrap gap-2">
+    <div class="flex items-center gap-2">
       <UInput
         v-model="newGroupName"
         placeholder="Neue Gruppe"
-        class="min-w-64"
+        class="w-full max-w-64 flex-1"
       />
       <UButton
         label="Gruppe anlegen"
-        color="neutral"
+        icon="i-lucide-plus"
         @click="onCreateGroup"
       />
     </div>
@@ -109,6 +109,9 @@ function onSaveRename() {
             @click="emit('deleteGroup', group.id)"
           />
         </template>
+      </div>
+      <div v-if="groups.length === 0" class="text-gray-500">
+        Noch keine Gruppen vorhanden.
       </div>
     </div>
   </section>

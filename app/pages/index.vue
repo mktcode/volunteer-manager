@@ -161,11 +161,11 @@ function exportCsv() {
 
 <template>
   <div class="mx-auto max-w-7xl space-y-8 px-4 py-6">
-    <VolunteerHeaderSection @create-volunteer="openCreateVolunteerModal" />
+    <VolunteersHeaderSection @create-volunteer="openCreateVolunteerModal" />
 
-    <VolunteerSearchSection v-model="searchQuery" />
+    <VolunteersSearchSection v-model="searchQuery" />
 
-    <GroupManagementSection
+    <VolunteersGroupManagementSection
       :groups="groups"
       :error-message="groupError"
       @create-group="onCreateGroup"
@@ -173,7 +173,7 @@ function exportCsv() {
       @delete-group="removeGroupWithConfirm"
     />
 
-    <VolunteerTableSection
+    <VolunteersTableSection
       :rows="tableRows"
       :selected-volunteer-ids="selectedVolunteerIds"
       @toggle-selection="toggleVolunteerSelection"
@@ -181,7 +181,7 @@ function exportCsv() {
       @delete-volunteer="removeVolunteerWithConfirm"
     />
 
-    <EmailSelectionSection
+    <VolunteersEmailSelectionSection
       :group-options="groupOptions"
       :selected-emails="selectedEmails"
       :copied="copied"
@@ -192,13 +192,13 @@ function exportCsv() {
       @copy-selected="copySelectedEmails"
     />
 
-    <CsvTransferSection
+    <VolunteersCsvTransferSection
       :import-summary="importSummary"
       @import-file="onImportFile"
       @export-csv="exportCsv"
     />
 
-    <VolunteerFormModal
+    <VolunteersFormModal
       v-model:open="isVolunteerModalOpen"
       :group-options="groupOptions"
       :volunteer="editingVolunteer"

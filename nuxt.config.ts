@@ -12,6 +12,13 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+  ui: {
+    theme: {
+      defaultVariants: {
+        size: 'xl'
+      }
+    }
+  },
 
   compatibilityDate: '2025-01-15',
 

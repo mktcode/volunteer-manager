@@ -49,14 +49,12 @@ const columns: TableColumn<VolunteerRow>[] = [
             label="Bearbeiten"
             color="neutral"
             variant="soft"
-            size="sm"
             @click="emit('editVolunteer', row.original.id)"
           />
           <UButton
             label="Löschen"
             color="error"
             variant="soft"
-            size="sm"
             @click="emit('deleteVolunteer', row.original.id)"
           />
         </div>

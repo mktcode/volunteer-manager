@@ -84,14 +84,12 @@ function onSaveRename() {
           />
           <UButton
             label="Speichern"
-            size="sm"
             @click="onSaveRename"
           />
           <UButton
             label="Abbrechen"
             color="neutral"
             variant="soft"
-            size="sm"
             @click="editingGroupId = null"
           />
         </template>
@@ -102,14 +100,12 @@ function onSaveRename() {
             label="Umbenennen"
             color="neutral"
             variant="soft"
-            size="sm"
             @click="beginRenameGroup(group.id, group.name)"
           />
           <UButton
             label="Löschen"
             color="error"
             variant="soft"
-            size="sm"
             @click="emit('deleteGroup', group.id)"
           />
         </template>

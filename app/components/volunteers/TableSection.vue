@@ -26,10 +26,6 @@ const columns: TableColumn<VolunteerRow>[] = [
 
 <template>
   <section class="space-y-3">
-    <h2 class="text-lg font-medium text-highlighted">
-      Freiwillige
-    </h2>
-
     <UTable
       :data="rows"
       :columns="columns"

@@ -161,9 +161,7 @@ function exportCsv() {
 
 <template>
   <div class="mx-auto max-w-7xl space-y-8 px-4 py-6">
-    <VolunteersHeaderSection @create-volunteer="openCreateVolunteerModal" />
-
-    <VolunteersSearchSection v-model="searchQuery" />
+    <VolunteersHeaderSection />
 
     <VolunteersGroupManagementSection
       :groups="groups"
@@ -172,6 +170,18 @@ function exportCsv() {
       @rename-group="onRenameGroup"
       @delete-group="removeGroupWithConfirm"
     />
+
+    <div class="flex items-center gap-4">
+      <h2 class="text-lg font-medium text-highlighted mr-auto">
+        Freiwillige
+      </h2>
+      <VolunteersSearchSection v-model="searchQuery" />
+      <UButton
+        label="Neue Person"
+        icon="i-lucide-plus"
+        @click="openCreateVolunteerModal"
+      />
+    </div>
 
     <VolunteersTableSection
       :rows="tableRows"

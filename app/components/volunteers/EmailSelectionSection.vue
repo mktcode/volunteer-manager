@@ -67,7 +67,7 @@ function onSelectByGroups() {
       </div>
       <UButton
         v-if="groupOptions.length > 0"
-        label="Freiwillige aus gewählten Gruppen auswählen"
+        label="aus gewählten Gruppen auswählen"
         color="neutral"
         variant="soft"
         class="w-fit"

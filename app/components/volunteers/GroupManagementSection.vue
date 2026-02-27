@@ -95,15 +95,17 @@ function onSaveRename() {
         </template>
 
         <template v-else>
-          <span class="mr-auto">{{ group.name }}</span>
+          <span class="w-full md:w-auto md:mr-auto">{{ group.name }}</span>
           <UButton
             label="Umbenennen"
+            icon="i-lucide-edit"
             color="neutral"
             variant="soft"
             @click="beginRenameGroup(group.id, group.name)"
           />
           <UButton
             label="Löschen"
+            icon="i-lucide-trash-2"
             color="error"
             variant="soft"
             @click="emit('deleteGroup', group.id)"

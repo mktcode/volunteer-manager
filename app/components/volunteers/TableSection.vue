@@ -47,12 +47,14 @@ const columns: TableColumn<VolunteerRow>[] = [
         <div class="flex flex-wrap justify-end gap-1">
           <UButton
             label="Bearbeiten"
+            icon="i-lucide-edit"
             color="neutral"
             variant="soft"
             @click="emit('editVolunteer', row.original.id)"
           />
           <UButton
             label="Löschen"
+            icon="i-lucide-trash-2"
             color="error"
             variant="soft"
             @click="emit('deleteVolunteer', row.original.id)"

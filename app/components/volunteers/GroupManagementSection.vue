@@ -75,12 +75,12 @@ function onSaveRename() {
       <div
         v-for="group in groups"
         :key="group.id"
-        class="flex flex-wrap items-center gap-2"
+        class="flex flex-wrap items-center gap-2 border border-gray-100 rounded-md px-3 py-2"
       >
         <template v-if="editingGroupId === group.id">
           <UInput
             v-model="editingGroupName"
-            class="min-w-56"
+            class="min-w-56 mr-auto"
           />
           <UButton
             label="Speichern"
@@ -97,7 +97,7 @@ function onSaveRename() {
         </template>
 
         <template v-else>
-          <span class="text-sm">{{ group.name }}</span>
+          <span class="text-sm mr-auto">{{ group.name }}</span>
           <UButton
             label="Umbenennen"
             color="neutral"

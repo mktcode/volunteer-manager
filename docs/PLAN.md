@@ -252,8 +252,6 @@ Validation handled via Nuxt UI form validation.
 * Tag-style group chips
 * Bulk select / select all
 * Export selected only
-* Dark mode support
-* Backup JSON export
 
 ---
 

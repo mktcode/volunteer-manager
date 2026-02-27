@@ -27,7 +27,7 @@ function onSelectByGroups() {
 </script>
 
 <template>
-  <section class="space-y-3">
+  <section class="flex flex-col gap-3">
     <h2 class="text-lg font-medium text-highlighted">
       E-Mail-Auswahl
     </h2>
@@ -47,7 +47,7 @@ function onSelectByGroups() {
       />
     </div>
 
-    <div class="space-y-2">
+    <div class="flex flex-col gap-2">
       <p class="text-sm text-muted">
         Auswahl nach Gruppe:
       </p>

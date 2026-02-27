@@ -25,7 +25,7 @@ const columns: TableColumn<VolunteerRow>[] = [
 </script>
 
 <template>
-  <section class="space-y-3">
+  <section class="flex flex-col gap-3">
     <UTable
       :data="rows"
       :columns="columns"

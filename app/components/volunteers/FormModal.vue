@@ -74,7 +74,7 @@ function onSubmit() {
     @update:open="emit('update:open', $event)"
   >
     <template #content>
-      <div class="space-y-4 p-4">
+      <div class="flex flex-col gap-4 p-4">
         <h3 class="text-lg font-medium text-highlighted">
           {{ volunteer ? 'Person bearbeiten' : 'Neue Person' }}
         </h3>
@@ -82,7 +82,7 @@ function onSubmit() {
         <UForm
           :schema="volunteerFormSchema"
           :state="form"
-          class="space-y-3"
+          class="flex flex-col gap-3"
           @submit.prevent="onSubmit"
         >
           <UInput
@@ -102,7 +102,7 @@ function onSubmit() {
             placeholder="Telefon"
           />
 
-          <div class="space-y-2">
+          <div class="flex flex-col gap-2">
             <p class="text-sm text-muted">
               Gruppen
             </p>

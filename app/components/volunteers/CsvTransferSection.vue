@@ -23,7 +23,7 @@ function onFileChange(event: Event) {
 </script>
 
 <template>
-  <section class="space-y-3">
+  <section class="flex flex-col gap-3">
     <h2 class="text-lg font-medium text-highlighted">
       CSV Import / Export
     </h2>
@@ -45,14 +45,14 @@ function onFileChange(event: Event) {
 
     <div
       v-if="importSummary"
-      class="space-y-2 text-sm"
+      class="flex flex-col gap-2 text-sm"
     >
       <p>
         Importiert: {{ importSummary.imported }} · Übersprungen: {{ importSummary.skipped }}
       </p>
       <ul
         v-if="importSummary.errors.length"
-        class="list-disc space-y-1 pl-5 text-error"
+        class="list-disc flex flex-col gap-1 pl-5 text-error"
       >
         <li
           v-for="message in importSummary.errors"

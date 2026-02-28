@@ -98,6 +98,7 @@ const groupError = ref('')
 
 const isVolunteerModalOpen = ref(false)
 const isAvailabilityFilterModalOpen = ref(false)
+const isGroupManagementModalOpen = ref(false)
 const editingVolunteerId = ref<string | null>(null)
 const volunteerError = ref('')
 
@@ -121,6 +122,10 @@ function openCreateVolunteerModal() {
 
 function openAvailabilityFilterModal() {
   isAvailabilityFilterModalOpen.value = true
+}
+
+function openGroupManagementModal() {
+  isGroupManagementModalOpen.value = true
 }
 
 function openEditVolunteerModal(id: string) {
@@ -219,19 +224,18 @@ function exportCsv() {
   <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 bg-white shadow-2xl shadow-black/5 min-h-screen">
     <VolunteersHeaderSection />
 
-    <VolunteersGroupManagementSection
-      :groups="groups"
-      :error-message="groupError"
-      @create-group="onCreateGroup"
-      @rename-group="onRenameGroup"
-      @delete-group="removeGroupWithConfirm"
-    />
-
     <div class="flex flex-col md:flex-row items-center gap-4">
       <h2 class="text-lg font-medium text-highlighted mr-auto">
         Freiwillige
       </h2>
       <div class="flex items-center gap-2">
+        <UButton
+          label="Gruppen verwalten"
+          icon="i-lucide-users"
+          color="neutral"
+          variant="soft"
+          @click="openGroupManagementModal"
+        />
         <VolunteersSearchSection
           v-model="searchQuery"
           @open-filter="openAvailabilityFilterModal"
@@ -280,6 +284,15 @@ function exportCsv() {
     <VolunteersAvailabilityFilterModal
       v-model:open="isAvailabilityFilterModalOpen"
       v-model:filter="availabilityFilter"
+    />
+
+    <VolunteersGroupManagementModal
+      v-model:open="isGroupManagementModalOpen"
+      :groups="groups"
+      :error-message="groupError"
+      @create-group="onCreateGroup"
+      @rename-group="onRenameGroup"
+      @delete-group="removeGroupWithConfirm"
     />
   </div>
 </template>

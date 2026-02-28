@@ -215,7 +215,7 @@ export function useVolunteers() {
       const safeRow = csvRowSchema.safeParse(row as CsvRow)
       if (!safeRow.success) {
         skipped += 1
-        errors.push(`Zeile ${index + 2}: Ungültige Struktur.`)
+        errors.push(`Zeile ${index + 1}: Ungültige Struktur.`)
         continue
       }
 
@@ -231,20 +231,20 @@ export function useVolunteers() {
 
       if (!firstname || !lastname || !email) {
         skipped += 1
-        errors.push(`Zeile ${index + 2}: Pflichtfelder fehlen.`)
+        errors.push(`Zeile ${index + 1}: Pflichtfelder fehlen.`)
         continue
       }
 
       if (!emailSchema.safeParse(email).success) {
         skipped += 1
-        errors.push(`Zeile ${index + 2}: E-Mail ist ungültig.`)
+        errors.push(`Zeile ${index + 1}: E-Mail ist ungültig.`)
         continue
       }
 
       const normalizedEmail = normalizeEmail(email)
       if (usedEmails.has(normalizedEmail)) {
         skipped += 1
-        errors.push(`Zeile ${index + 2}: E-Mail bereits vorhanden.`)
+        errors.push(`Zeile ${index + 1}: E-Mail bereits vorhanden.`)
         continue
       }
 

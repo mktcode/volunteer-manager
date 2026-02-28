@@ -107,7 +107,7 @@ const columns: TableColumn<VolunteerRow>[] = [
           square
           class="min-h-7 min-w-7"
           aria-label="Verfügbarkeiten ein-/ausklappen"
-          :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+          :icon="row.getIsExpanded() ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
           @click="row.toggleExpanded()"
         />
       </template>

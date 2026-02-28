@@ -13,3 +13,7 @@ Man könnte auch eine öffentliche Seite haben, auf der man Ankündigungen oder 
 # Freiwilligen-Formular auf Website
 
 Man könnte ein Formular online bereitstellen, über das sich potenzielle Freiwillige direkt eintragen können.
+
+# Fragen
+
+Um wie viele Helfer handelt es sich potentiell? Ein paar Dutzend? Hunderte?

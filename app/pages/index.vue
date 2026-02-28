@@ -224,28 +224,23 @@ function exportCsv() {
   <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 bg-white shadow-2xl shadow-black/5 min-h-screen">
     <VolunteersHeaderSection />
 
-    <div class="flex flex-col md:flex-row items-center gap-4">
-      <h2 class="text-lg font-medium text-highlighted mr-auto">
-        Freiwillige
-      </h2>
-      <div class="flex items-center gap-2">
-        <UButton
-          label="Gruppen verwalten"
-          icon="i-lucide-users"
-          color="neutral"
-          variant="soft"
-          @click="openGroupManagementModal"
-        />
-        <VolunteersSearchSection
-          v-model="searchQuery"
-          @open-filter="openAvailabilityFilterModal"
-        />
-        <UButton
-          label="Neue Person"
-          icon="i-lucide-plus"
-          @click="openCreateVolunteerModal"
-        />
-      </div>
+    <div class="flex items-center gap-2 ml-auto">
+      <UButton
+        label="Gruppen verwalten"
+        icon="i-lucide-users"
+        color="neutral"
+        variant="soft"
+        @click="openGroupManagementModal"
+      />
+      <VolunteersSearchSection
+        v-model="searchQuery"
+        @open-filter="openAvailabilityFilterModal"
+      />
+      <UButton
+        label="Neue Person"
+        icon="i-lucide-plus"
+        @click="openCreateVolunteerModal"
+      />
     </div>
 
     <VolunteersTableSection

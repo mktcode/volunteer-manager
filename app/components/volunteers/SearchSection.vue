@@ -15,7 +15,7 @@ const emit = defineEmits<{
         icon="i-lucide-search"
       />
       <UButton
-        label="Nach Verfügbarkeit filtern"
+        label="Verfügbarkeit filtern"
         icon="i-lucide-filter"
         color="neutral"
         variant="soft"

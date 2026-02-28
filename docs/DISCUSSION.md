@@ -9,3 +9,7 @@ Könnte direkt integriert werden, mit Vorlagen und personalisierbaren Feldern.
 # Öffentliche Website für Ankündigungen
 
 Man könnte auch eine öffentliche Seite haben, auf der man Ankündigungen oder Informationen für die Helfer posten kann, z.B. über anstehende Veranstaltungen, wichtige Updates oder allgemeine Informationen zum Zoo.
+
+# Freiwilligen-Formular auf Website
+
+Man könnte ein Formular online bereitstellen, über das sich potenzielle Freiwillige direkt eintragen können.

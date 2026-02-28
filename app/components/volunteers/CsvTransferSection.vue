@@ -10,6 +10,8 @@ const emit = defineEmits<{
   exportCsv: []
 }>()
 
+const fileInput = ref<HTMLInputElement | null>(null)
+
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -25,18 +27,26 @@ function onFileChange(event: Event) {
 <template>
   <section class="flex flex-col gap-3">
     <h2 class="text-lg font-medium text-highlighted">
-      CSV Import / Export
+      Import / Export
     </h2>
 
     <div class="flex flex-wrap items-center gap-3">
       <input
+        class="hidden"
         type="file"
         accept=".csv,text/csv"
         @change="onFileChange"
+        ref="fileInput"
       >
+      <UButton
+        label="Daten importieren"
+        color="neutral"
+        variant="soft"
+        @click="fileInput?.click()"
+      />
 
       <UButton
-        label="CSV exportieren"
+        label="Daten exportieren"
         color="neutral"
         variant="soft"
         @click="emit('exportCsv')"

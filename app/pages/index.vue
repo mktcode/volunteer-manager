@@ -160,7 +160,7 @@ function exportCsv() {
 </script>
 
 <template>
-  <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6">
+  <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 bg-white shadow-2xl shadow-black/5 min-h-screen">
     <VolunteersHeaderSection />
 
     <VolunteersGroupManagementSection

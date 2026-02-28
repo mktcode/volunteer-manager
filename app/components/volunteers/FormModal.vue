@@ -97,6 +97,44 @@ const form = reactive({
 
 const internalError = ref('')
 const formId = 'volunteer-form'
+const fieldErrors = reactive({
+  firstname: '',
+  lastname: '',
+  email: ''
+})
+
+function clearFieldErrors() {
+  fieldErrors.firstname = ''
+  fieldErrors.lastname = ''
+  fieldErrors.email = ''
+}
+
+function setFieldErrors(errors: Array<{ name?: string, message: string }>) {
+  clearFieldErrors()
+
+  for (const error of errors) {
+    if (!error.name || !(error.name in fieldErrors)) {
+      continue
+    }
+
+    if (!fieldErrors[error.name as keyof typeof fieldErrors]) {
+      fieldErrors[error.name as keyof typeof fieldErrors] = error.message
+    }
+  }
+}
+
+function setFieldErrorsFromSchema() {
+  const parsed = volunteerFormSchema.safeParse(form)
+  if (parsed.success) {
+    clearFieldErrors()
+    return
+  }
+
+  setFieldErrors(parsed.error.issues.map(issue => ({
+    name: typeof issue.path[0] === 'string' ? issue.path[0] : undefined,
+    message: issue.message
+  })))
+}
 
 watch(() => props.open, (isOpen) => {
   if (!isOpen) {
@@ -130,16 +168,19 @@ watch(() => props.open, (isOpen) => {
   }
 
   internalError.value = ''
+  clearFieldErrors()
 })
 
 function onSubmit() {
   const parsed = volunteerFormSchema.safeParse(form)
   if (!parsed.success) {
     internalError.value = 'Bitte prüfe die Eingaben im Formular.'
+    setFieldErrorsFromSchema()
     return
   }
 
   internalError.value = ''
+  clearFieldErrors()
   emit('saveVolunteer', {
     firstname: parsed.data.firstname,
     lastname: parsed.data.lastname,
@@ -153,6 +194,17 @@ function onSubmit() {
     notes: parsed.data.notes || '',
     groups: parsed.data.groups
   })
+}
+
+function onFormError(event?: { errors?: Array<{ name?: string, message: string }> }) {
+  internalError.value = 'Bitte prüfe die Eingaben im Formular.'
+
+  if (event?.errors?.length) {
+    setFieldErrors(event.errors)
+    return
+  }
+
+  setFieldErrorsFromSchema()
 }
 </script>
 
@@ -174,19 +226,38 @@ function onSubmit() {
         :state="form"
         class="flex flex-col gap-3"
         @submit.prevent="onSubmit"
+        @error="onFormError"
       >
         <UInput
           v-model="form.firstname"
           placeholder="Vorname"
         />
+        <p
+          v-if="fieldErrors.firstname"
+          class="text-sm text-error"
+        >
+          {{ fieldErrors.firstname }}
+        </p>
         <UInput
           v-model="form.lastname"
           placeholder="Nachname"
         />
+        <p
+          v-if="fieldErrors.lastname"
+          class="text-sm text-error"
+        >
+          {{ fieldErrors.lastname }}
+        </p>
         <UInput
           v-model="form.email"
           placeholder="E-Mail"
         />
+        <p
+          v-if="fieldErrors.email"
+          class="text-sm text-error"
+        >
+          {{ fieldErrors.email }}
+        </p>
         <UInput
           v-model="form.phone"
           placeholder="Telefon"

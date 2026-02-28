@@ -32,9 +32,11 @@ export const availabilitySchema = z.object({
 
 export const volunteerSchema = z.object({
   id: z.string().min(1),
-  firstname: z.string().trim().min(1),
-  lastname: z.string().trim().min(1),
-  email: z.string().trim().email(),
+  firstname: z.string().trim().min(1, { message: 'Bitte den Vornamen eingeben.' }),
+  lastname: z.string().trim().min(1, { message: 'Bitte den Nachnamen eingeben.' }),
+  email: z.string().trim()
+    .min(1, { message: 'Bitte eine E-Mail-Adresse eingeben.' })
+    .email({ message: 'Bitte eine gültige E-Mail-Adresse eingeben.' }),
   phone: z.string().trim().default(''),
   street: z.string().trim().default(''),
   postalCode: z.string().trim().default(''),
@@ -85,9 +87,11 @@ export const csvRowSchema = z.object({
 })
 
 export const volunteerFormSchema = z.object({
-  firstname: z.string().trim().min(1),
-  lastname: z.string().trim().min(1),
-  email: z.string().trim().email(),
+  firstname: z.string().trim().min(1, { message: 'Bitte den Vornamen eingeben.' }),
+  lastname: z.string().trim().min(1, { message: 'Bitte den Nachnamen eingeben.' }),
+  email: z.string().trim()
+    .min(1, { message: 'Bitte eine E-Mail-Adresse eingeben.' })
+    .email({ message: 'Bitte eine gültige E-Mail-Adresse eingeben.' }),
   phone: z.string().optional(),
   street: z.string().optional(),
   postalCode: z.string().optional(),

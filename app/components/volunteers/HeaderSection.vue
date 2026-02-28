@@ -5,7 +5,7 @@
         Freiwilligenverwaltung
       </h1>
       <p class="text-muted">
-        Verwaltung von Helferinnen und Helfern für den Zoo Osnabrück.
+        Zoo Osnabrück
       </p>
     </div>
   </section>

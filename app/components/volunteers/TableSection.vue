@@ -28,18 +28,6 @@ function getAvailabilityLabels(morning: boolean, afternoon: boolean) {
   return labels
 }
 
-function getAvailabilitySectionCount(row: VolunteerRow) {
-  return availabilitySections.reduce((count, section) => {
-    const period = row.availability[section.key]
-
-    if (period.moFrMorning || period.moFrAfternoon || period.saturdayMorning || period.saturdayAfternoon) {
-      return count + 1
-    }
-
-    return count
-  }, 0)
-}
-
 const props = defineProps<{
   rows: VolunteerRow[]
   selectedVolunteerIds: string[]
@@ -70,7 +58,6 @@ const columns: TableColumn<VolunteerRow>[] = [
   { accessorKey: 'phone', header: 'Telefon' },
   { id: 'address', header: 'Adresse' },
   { accessorKey: 'interests', header: 'Interesse an' },
-  { id: 'availability', header: 'Verfügbarkeit' },
   { id: 'groups', header: 'Gruppen' },
   {
     id: 'actions',
@@ -104,8 +91,7 @@ const columns: TableColumn<VolunteerRow>[] = [
           color="neutral"
           variant="soft"
           size="lg"
-          square
-          class="min-h-7 min-w-7"
+          label="Verfügbarkeit"
           aria-label="Verfügbarkeiten ein-/ausklappen"
           :icon="row.getIsExpanded() ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
           @click="row.toggleExpanded()"
@@ -125,15 +111,10 @@ const columns: TableColumn<VolunteerRow>[] = [
       </template>
 
       <template #address-cell="{ row }">
-        <span>{{ [row.original.street, row.original.postalCode, row.original.city].filter(Boolean).join(', ') || '—' }}</span>
-      </template>
-
-      <template #availability-cell="{ row }">
-        <UBadge
-          :label="`${getAvailabilitySectionCount(row.original)}/4 Bereiche`"
-          color="neutral"
-          variant="subtle"
-        />
+        <div class="flex flex-col leading-tight">
+          <span>{{ row.original.street || '—' }}</span>
+          <span class="text-muted">{{ [row.original.postalCode, row.original.city].filter(Boolean).join(' ') || '—' }}</span>
+        </div>
       </template>
 
       <template #actions-cell="{ row }">

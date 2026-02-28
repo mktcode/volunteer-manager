@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { Group } from '~/utils/volunteer-types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   groups: Group[]
   errorMessage: string
-}>()
+  showTitle?: boolean
+}>(), {
+  showTitle: true
+})
 
 const emit = defineEmits<{
   createGroup: [name: string]
@@ -47,7 +50,10 @@ function onSaveRename() {
 
 <template>
   <section class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium text-highlighted">
+    <h2
+      v-if="props.showTitle"
+      class="text-lg font-medium text-highlighted"
+    >
       Gruppen
     </h2>
 

@@ -17,12 +17,14 @@ const availabilitySections = [
     :open="open"
     @update:open="open = $event"
   >
-    <template #content>
-      <div class="flex flex-col gap-4 p-4">
-        <h3 class="text-lg font-medium text-highlighted">
-          Verfügbarkeit filtern
-        </h3>
+    <template #header>
+      <h3 class="text-lg font-medium text-highlighted">
+        Verfügbarkeit filtern
+      </h3>
+    </template>
 
+    <template #body>
+      <div class="flex flex-col gap-4">
         <p class="text-sm text-muted">
           Zeige Personen, die in mindestens einem ausgewählten Zeitraum verfügbar sind.
         </p>
@@ -94,15 +96,17 @@ const availabilitySections = [
             </tbody>
           </table>
         </div>
+      </div>
+    </template>
 
-        <div class="flex justify-end">
-          <UButton
-            label="Schließen"
-            color="neutral"
-            variant="soft"
-            @click="open = false"
-          />
-        </div>
+    <template #footer>
+      <div class="flex w-full justify-end">
+        <UButton
+          label="Schließen"
+          color="neutral"
+          variant="soft"
+          @click="open = false"
+        />
       </div>
     </template>
   </UModal>

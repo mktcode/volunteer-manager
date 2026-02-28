@@ -96,6 +96,7 @@ const form = reactive({
 })
 
 const internalError = ref('')
+const formId = 'volunteer-form'
 
 watch(() => props.open, (isOpen) => {
   if (!isOpen) {
@@ -160,174 +161,178 @@ function onSubmit() {
     :open="open"
     @update:open="emit('update:open', $event)"
   >
-    <template #content>
-      <div class="flex flex-col gap-4 p-4">
-        <h3 class="text-lg font-medium text-highlighted">
-          {{ volunteer ? 'Person bearbeiten' : 'Neue Person' }}
-        </h3>
+    <template #header>
+      <h3 class="text-lg font-medium text-highlighted">
+        {{ volunteer ? 'Person bearbeiten' : 'Neue Person' }}
+      </h3>
+    </template>
 
-        <UForm
-          :schema="volunteerFormSchema"
-          :state="form"
-          class="flex flex-col gap-3"
-          @submit.prevent="onSubmit"
-        >
+    <template #body>
+      <UForm
+        :id="formId"
+        :schema="volunteerFormSchema"
+        :state="form"
+        class="flex flex-col gap-3"
+        @submit.prevent="onSubmit"
+      >
+        <UInput
+          v-model="form.firstname"
+          placeholder="Vorname"
+        />
+        <UInput
+          v-model="form.lastname"
+          placeholder="Nachname"
+        />
+        <UInput
+          v-model="form.email"
+          placeholder="E-Mail"
+        />
+        <UInput
+          v-model="form.phone"
+          placeholder="Telefon"
+        />
+        <UInput
+          v-model="form.street"
+          placeholder="Straße"
+        />
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UInput
-            v-model="form.firstname"
-            placeholder="Vorname"
+            v-model="form.postalCode"
+            placeholder="Postleitzahl"
           />
           <UInput
-            v-model="form.lastname"
-            placeholder="Nachname"
+            v-model="form.city"
+            placeholder="Ort"
           />
-          <UInput
-            v-model="form.email"
-            placeholder="E-Mail"
-          />
-          <UInput
-            v-model="form.phone"
-            placeholder="Telefon"
-          />
-          <UInput
-            v-model="form.street"
-            placeholder="Straße"
-          />
-          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <UInput
-              v-model="form.postalCode"
-              placeholder="Postleitzahl"
-            />
-            <UInput
-              v-model="form.city"
-              placeholder="Ort"
-            />
-          </div>
+        </div>
 
-          <UTextarea
-            v-model="form.interests"
-            placeholder="Interesse an"
-            :rows="2"
-          />
+        <UTextarea
+          v-model="form.interests"
+          placeholder="Interesse an"
+          :rows="2"
+        />
 
-          <div class="flex flex-col gap-3">
-            <p class="text-muted">
-              Mögliche Zeiträume für Mitarbeit
-            </p>
-            <div class="overflow-x-auto">
-              <table class="w-full border-collapse text-sm">
-                <thead>
-                  <tr>
-                    <th class="border px-2 py-1 text-left font-medium">
-                      Bereich
-                    </th>
-                    <th class="border px-2 py-1 text-left font-medium">
-                      Tag
-                    </th>
-                    <th class="border px-2 py-1 text-center font-medium">
-                      vormittags
-                    </th>
-                    <th class="border px-2 py-1 text-center font-medium">
-                      nachmittags
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template
-                    v-for="section in availabilitySections"
-                    :key="section.key"
-                  >
-                    <tr>
-                      <td
-                        class="border px-2 py-1 font-medium"
-                        rowspan="2"
-                      >
-                        {{ section.label }}
-                      </td>
-                      <td class="border px-2 py-1">
-                        Mo-Fr
-                      </td>
-                      <td class="border px-2 py-1 text-center">
-                        <input
-                          v-model="form.availability[section.key].moFrMorning"
-                          type="checkbox"
-                        >
-                      </td>
-                      <td class="border px-2 py-1 text-center">
-                        <input
-                          v-model="form.availability[section.key].moFrAfternoon"
-                          type="checkbox"
-                        >
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="border px-2 py-1">
-                        Samstag
-                      </td>
-                      <td class="border px-2 py-1 text-center">
-                        <input
-                          v-model="form.availability[section.key].saturdayMorning"
-                          type="checkbox"
-                        >
-                      </td>
-                      <td class="border px-2 py-1 text-center">
-                        <input
-                          v-model="form.availability[section.key].saturdayAfternoon"
-                          type="checkbox"
-                        >
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <p class="text-muted">
-              Gruppen
-            </p>
-            <div class="flex flex-wrap gap-4">
-              <label
-                v-for="option in groupOptions"
-                :key="option.value"
-                class="inline-flex items-center gap-2"
-              >
-                <input
-                  v-model="form.groups"
-                  type="checkbox"
-                  :value="option.value"
-                >
-                {{ option.label }}
-              </label>
-            </div>
-          </div>
-
-          <UTextarea
-            v-model="form.notes"
-            placeholder="Notizen"
-            :rows="3"
-          />
-
-          <p
-            v-if="internalError || externalError"
-            class="text-error"
-          >
-            {{ internalError || externalError }}
+        <div class="flex flex-col gap-3">
+          <p class="text-muted">
+            Mögliche Zeiträume für Mitarbeit
           </p>
-
-          <div class="flex justify-end gap-2">
-            <UButton
-              label="Abbrechen"
-              color="neutral"
-              variant="soft"
-              @click="emit('update:open', false)"
-            />
-            <UButton
-              type="submit"
-              :label="volunteer ? 'Speichern' : 'Anlegen'"
-            />
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+              <thead>
+                <tr>
+                  <th class="border px-2 py-1 text-left font-medium">
+                    Bereich
+                  </th>
+                  <th class="border px-2 py-1 text-left font-medium">
+                    Tag
+                  </th>
+                  <th class="border px-2 py-1 text-center font-medium">
+                    vormittags
+                  </th>
+                  <th class="border px-2 py-1 text-center font-medium">
+                    nachmittags
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  v-for="section in availabilitySections"
+                  :key="section.key"
+                >
+                  <tr>
+                    <td
+                      class="border px-2 py-1 font-medium"
+                      rowspan="2"
+                    >
+                      {{ section.label }}
+                    </td>
+                    <td class="border px-2 py-1">
+                      Mo-Fr
+                    </td>
+                    <td class="border px-2 py-1 text-center">
+                      <input
+                        v-model="form.availability[section.key].moFrMorning"
+                        type="checkbox"
+                      >
+                    </td>
+                    <td class="border px-2 py-1 text-center">
+                      <input
+                        v-model="form.availability[section.key].moFrAfternoon"
+                        type="checkbox"
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border px-2 py-1">
+                      Samstag
+                    </td>
+                    <td class="border px-2 py-1 text-center">
+                      <input
+                        v-model="form.availability[section.key].saturdayMorning"
+                        type="checkbox"
+                      >
+                    </td>
+                    <td class="border px-2 py-1 text-center">
+                      <input
+                        v-model="form.availability[section.key].saturdayAfternoon"
+                        type="checkbox"
+                      >
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
           </div>
-        </UForm>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <p class="text-muted">
+            Gruppen
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <label
+              v-for="option in groupOptions"
+              :key="option.value"
+              class="inline-flex items-center gap-2"
+            >
+              <input
+                v-model="form.groups"
+                type="checkbox"
+                :value="option.value"
+              >
+              {{ option.label }}
+            </label>
+          </div>
+        </div>
+
+        <UTextarea
+          v-model="form.notes"
+          placeholder="Notizen"
+          :rows="3"
+        />
+
+        <p
+          v-if="internalError || externalError"
+          class="text-error"
+        >
+          {{ internalError || externalError }}
+        </p>
+      </UForm>
+    </template>
+
+    <template #footer>
+      <div class="flex w-full justify-end gap-2">
+        <UButton
+          label="Abbrechen"
+          color="neutral"
+          variant="soft"
+          @click="emit('update:open', false)"
+        />
+        <UButton
+          type="submit"
+          :form="formId"
+          :label="volunteer ? 'Speichern' : 'Anlegen'"
+        />
       </div>
     </template>
   </UModal>

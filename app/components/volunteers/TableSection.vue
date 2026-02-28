@@ -75,11 +75,11 @@ const columns: TableColumn<VolunteerRow>[] = [
   {
     id: 'actions',
     header: 'Aktionen',
-    size: 220,
+    size: 150,
     meta: {
       class: {
-        th: 'text-right min-w-[220px]',
-        td: 'text-right min-w-[220px]'
+        th: 'text-right min-w-[220px] bg-white',
+        td: 'text-right min-w-[220px] bg-white'
       }
     }
   }
@@ -139,14 +139,12 @@ const columns: TableColumn<VolunteerRow>[] = [
       <template #actions-cell="{ row }">
         <div class="flex flex-wrap justify-end gap-1">
           <UButton
-            label="Bearbeiten"
             icon="i-lucide-edit"
             color="neutral"
             variant="soft"
             @click="emit('editVolunteer', row.original.id)"
           />
           <UButton
-            label="Löschen"
             icon="i-lucide-trash-2"
             color="error"
             variant="soft"

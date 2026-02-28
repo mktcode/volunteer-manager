@@ -40,24 +40,12 @@ const emit = defineEmits<{
 }>()
 
 const columns: TableColumn<VolunteerRow>[] = [
-  {
-    id: 'expand',
-    header: '',
-    size: 48,
-    meta: {
-      class: {
-        th: 'w-12',
-        td: 'w-12'
-      }
-    }
-  },
   { id: 'select', header: '' },
   { accessorKey: 'firstname', header: 'Vorname' },
   { accessorKey: 'lastname', header: 'Nachname' },
   { accessorKey: 'email', header: 'E-Mail' },
   { accessorKey: 'phone', header: 'Telefon' },
   { id: 'address', header: 'Adresse' },
-  { accessorKey: 'interests', header: 'Interesse an' },
   { id: 'groups', header: 'Gruppen' },
   {
     id: 'actions',
@@ -86,18 +74,6 @@ const columns: TableColumn<VolunteerRow>[] = [
         tr: 'data-[expanded=true]:bg-elevated/30'
       }"
     >
-      <template #expand-cell="{ row }">
-        <UButton
-          color="neutral"
-          variant="soft"
-          size="lg"
-          label="Verfügbarkeit"
-          aria-label="Verfügbarkeiten ein-/ausklappen"
-          :icon="row.getIsExpanded() ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          @click="row.toggleExpanded()"
-        />
-      </template>
-
       <template #select-cell="{ row }">
         <input
           type="checkbox"
@@ -120,6 +96,13 @@ const columns: TableColumn<VolunteerRow>[] = [
       <template #actions-cell="{ row }">
         <div class="flex flex-wrap justify-end gap-1">
           <UButton
+            color="neutral"
+            variant="soft"
+            label="mehr"
+            :icon="row.getIsExpanded() ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+            @click="row.toggleExpanded()"
+          />
+          <UButton
             icon="i-lucide-edit"
             color="neutral"
             variant="soft"
@@ -135,7 +118,17 @@ const columns: TableColumn<VolunteerRow>[] = [
       </template>
 
       <template #expanded="{ row }">
-        <div class="grid gap-3 p-3 md:grid-cols-2">
+        <div class="grid gap-3 p-3">
+          <div class="rounded border border-default p-3">
+            <p class="mb-2 font-medium text-highlighted">
+              Interesse an
+            </p>
+            <p class="text-sm text-muted">
+              {{ row.original.interests || '—' }}
+            </p>
+          </div>
+
+          <div class="grid gap-3 md:grid-cols-2">
           <div
             v-for="section in availabilitySections"
             :key="section.key"
@@ -147,7 +140,7 @@ const columns: TableColumn<VolunteerRow>[] = [
 
             <div class="flex flex-col gap-2 text-sm text-muted">
               <div class="flex items-center gap-2">
-                <span class="w-14">Mo-Fr</span>
+                <span>Mo-Fr</span>
                 <div class="flex flex-wrap gap-1">
                   <UBadge
                     v-for="label in getAvailabilityLabels(row.original.availability[section.key].moFrMorning, row.original.availability[section.key].moFrAfternoon)"
@@ -162,7 +155,7 @@ const columns: TableColumn<VolunteerRow>[] = [
               </div>
 
               <div class="flex items-center gap-2">
-                <span class="w-14">Samstag</span>
+                <span>Samstag</span>
                 <div class="flex flex-wrap gap-1">
                   <UBadge
                     v-for="label in getAvailabilityLabels(row.original.availability[section.key].saturdayMorning, row.original.availability[section.key].saturdayAfternoon)"
@@ -176,6 +169,7 @@ const columns: TableColumn<VolunteerRow>[] = [
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </template>

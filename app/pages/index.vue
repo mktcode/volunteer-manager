@@ -18,6 +18,7 @@ const {
 const {
   volunteers,
   searchQuery,
+  availabilityFilter,
   filteredVolunteers,
   selectedVolunteerIds,
   selectedEmails,
@@ -96,6 +97,7 @@ const tableRows = computed<VolunteerRow[]>(() => {
 const groupError = ref('')
 
 const isVolunteerModalOpen = ref(false)
+const isAvailabilityFilterModalOpen = ref(false)
 const editingVolunteerId = ref<string | null>(null)
 const volunteerError = ref('')
 
@@ -115,6 +117,10 @@ function openCreateVolunteerModal() {
   editingVolunteerId.value = null
   volunteerError.value = ''
   isVolunteerModalOpen.value = true
+}
+
+function openAvailabilityFilterModal() {
+  isAvailabilityFilterModalOpen.value = true
 }
 
 function openEditVolunteerModal(id: string) {
@@ -226,7 +232,10 @@ function exportCsv() {
         Freiwillige
       </h2>
       <div class="flex items-center gap-2">
-        <VolunteersSearchSection v-model="searchQuery" />
+        <VolunteersSearchSection
+          v-model="searchQuery"
+          @open-filter="openAvailabilityFilterModal"
+        />
         <UButton
           label="Neue Person"
           icon="i-lucide-plus"
@@ -266,6 +275,11 @@ function exportCsv() {
       :volunteer="editingVolunteer"
       :external-error="volunteerError"
       @save-volunteer="onSaveVolunteer"
+    />
+
+    <VolunteersAvailabilityFilterModal
+      v-model:open="isAvailabilityFilterModalOpen"
+      v-model:filter="availabilityFilter"
     />
   </div>
 </template>

@@ -67,6 +67,26 @@ export function useVolunteers() {
 
   const selectedVolunteerIds = useState<string[]>('volunteer-selected-ids', () => [])
   const searchQuery = useState<string>('volunteer-search-query', () => '')
+  const availabilityFilter = useState<Availability>('volunteer-availability-filter', () => createEmptyAvailability())
+
+  const availabilitySections = ['oneTime', 'recurringWeekly', 'recurringMonthly', 'projectBased'] as const
+  const availabilitySlots = ['moFrMorning', 'moFrAfternoon', 'saturdayMorning', 'saturdayAfternoon'] as const
+
+  function hasActiveAvailabilityFilter(filter: Availability) {
+    return availabilitySections.some(section => availabilitySlots.some(slot => filter[section][slot]))
+  }
+
+  function matchesAvailabilityFilter(volunteerAvailability: Availability, filter: Availability) {
+    if (!hasActiveAvailabilityFilter(filter)) {
+      return true
+    }
+
+    return availabilitySections.some((section) => {
+      return availabilitySlots.some((slot) => {
+        return filter[section][slot] && volunteerAvailability[section][slot]
+      })
+    })
+  }
 
   const groupsById = computed(() => {
     return new Map(groups.value.map(group => [group.id, group]))
@@ -74,12 +94,8 @@ export function useVolunteers() {
 
   const filteredVolunteers = computed(() => {
     const query = searchQuery.value.trim().toLowerCase()
-    if (!query) {
-      return volunteers.value
-    }
-
     return volunteers.value.filter((volunteer) => {
-      return [
+      const matchesQuery = !query || [
         volunteer.firstname,
         volunteer.lastname,
         volunteer.email,
@@ -92,6 +108,12 @@ export function useVolunteers() {
         .join(' ')
         .toLowerCase()
         .includes(query)
+
+      if (!matchesQuery) {
+        return false
+      }
+
+      return matchesAvailabilityFilter(volunteer.availability, availabilityFilter.value)
     })
   })
 
@@ -419,6 +441,7 @@ export function useVolunteers() {
   return {
     volunteers,
     searchQuery,
+    availabilityFilter,
     filteredVolunteers,
     selectedVolunteerIds,
     selectedEmails,

@@ -18,6 +18,8 @@ function getStorageRef() {
         volunteers: [],
         groups: []
       }
+    } else {
+      storageRef.value = parsed.data
     }
   }
 

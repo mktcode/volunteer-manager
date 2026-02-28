@@ -1,8 +1,66 @@
 import Papa from 'papaparse'
-import type { CsvRow, ImportSummary, Volunteer, VolunteerInput } from '~/utils/volunteer-types'
+import type { Availability, AvailabilityPeriod, CsvRow, ImportSummary, Volunteer, VolunteerInput } from '~/utils/volunteer-types'
 import { createEntityId, normalizeEmail, normalizeGroupName } from '~/utils/volunteer-helpers'
 import { csvRowSchema, emailSchema, volunteerSchema } from '~/utils/volunteer-schemas'
 import { useVolunteerStorage } from '~/composables/useVolunteerStorage'
+
+function createEmptyAvailabilityPeriod(): AvailabilityPeriod {
+  return {
+    moFrMorning: false,
+    moFrAfternoon: false,
+    saturdayMorning: false,
+    saturdayAfternoon: false
+  }
+}
+
+function createEmptyAvailability(): Availability {
+  return {
+    oneTime: createEmptyAvailabilityPeriod(),
+    recurringWeekly: createEmptyAvailabilityPeriod(),
+    recurringMonthly: createEmptyAvailabilityPeriod(),
+    projectBased: createEmptyAvailabilityPeriod()
+  }
+}
+
+function sanitizeAvailability(input?: Availability): Availability {
+  const source = input || createEmptyAvailability()
+
+  return {
+    oneTime: {
+      moFrMorning: Boolean(source.oneTime?.moFrMorning),
+      moFrAfternoon: Boolean(source.oneTime?.moFrAfternoon),
+      saturdayMorning: Boolean(source.oneTime?.saturdayMorning),
+      saturdayAfternoon: Boolean(source.oneTime?.saturdayAfternoon)
+    },
+    recurringWeekly: {
+      moFrMorning: Boolean(source.recurringWeekly?.moFrMorning),
+      moFrAfternoon: Boolean(source.recurringWeekly?.moFrAfternoon),
+      saturdayMorning: Boolean(source.recurringWeekly?.saturdayMorning),
+      saturdayAfternoon: Boolean(source.recurringWeekly?.saturdayAfternoon)
+    },
+    recurringMonthly: {
+      moFrMorning: Boolean(source.recurringMonthly?.moFrMorning),
+      moFrAfternoon: Boolean(source.recurringMonthly?.moFrAfternoon),
+      saturdayMorning: Boolean(source.recurringMonthly?.saturdayMorning),
+      saturdayAfternoon: Boolean(source.recurringMonthly?.saturdayAfternoon)
+    },
+    projectBased: {
+      moFrMorning: Boolean(source.projectBased?.moFrMorning),
+      moFrAfternoon: Boolean(source.projectBased?.moFrAfternoon),
+      saturdayMorning: Boolean(source.projectBased?.saturdayMorning),
+      saturdayAfternoon: Boolean(source.projectBased?.saturdayAfternoon)
+    }
+  }
+}
+
+function toCsvBoolean(value: boolean) {
+  return value ? 'x' : ''
+}
+
+function parseCsvBoolean(value?: string) {
+  const normalized = (value || '').trim().toLowerCase()
+  return ['1', 'true', 'yes', 'ja', 'x'].includes(normalized)
+}
 
 export function useVolunteers() {
   const { volunteers, groups } = useVolunteerStorage()
@@ -25,6 +83,10 @@ export function useVolunteers() {
         volunteer.firstname,
         volunteer.lastname,
         volunteer.email,
+        volunteer.street,
+        volunteer.postalCode,
+        volunteer.city,
+        volunteer.interests,
         volunteer.notes
       ]
         .join(' ')
@@ -74,6 +136,11 @@ export function useVolunteers() {
       lastname: input.lastname.trim(),
       email: input.email.trim(),
       phone: (input.phone || '').trim(),
+      street: (input.street || '').trim(),
+      postalCode: (input.postalCode || '').trim(),
+      city: (input.city || '').trim(),
+      interests: (input.interests || '').trim(),
+      availability: sanitizeAvailability(input.availability),
       groups: [...new Set((input.groups || []).filter(Boolean))],
       notes: (input.notes || '').trim()
     }
@@ -183,6 +250,26 @@ export function useVolunteers() {
         lastname: volunteer.lastname,
         email: volunteer.email,
         phone: volunteer.phone,
+        street: volunteer.street,
+        postalCode: volunteer.postalCode,
+        city: volunteer.city,
+        interests: volunteer.interests,
+        availabilityOneTimeMoFrMorning: toCsvBoolean(volunteer.availability.oneTime.moFrMorning),
+        availabilityOneTimeMoFrAfternoon: toCsvBoolean(volunteer.availability.oneTime.moFrAfternoon),
+        availabilityOneTimeSaturdayMorning: toCsvBoolean(volunteer.availability.oneTime.saturdayMorning),
+        availabilityOneTimeSaturdayAfternoon: toCsvBoolean(volunteer.availability.oneTime.saturdayAfternoon),
+        availabilityRecurringWeeklyMoFrMorning: toCsvBoolean(volunteer.availability.recurringWeekly.moFrMorning),
+        availabilityRecurringWeeklyMoFrAfternoon: toCsvBoolean(volunteer.availability.recurringWeekly.moFrAfternoon),
+        availabilityRecurringWeeklySaturdayMorning: toCsvBoolean(volunteer.availability.recurringWeekly.saturdayMorning),
+        availabilityRecurringWeeklySaturdayAfternoon: toCsvBoolean(volunteer.availability.recurringWeekly.saturdayAfternoon),
+        availabilityRecurringMonthlyMoFrMorning: toCsvBoolean(volunteer.availability.recurringMonthly.moFrMorning),
+        availabilityRecurringMonthlyMoFrAfternoon: toCsvBoolean(volunteer.availability.recurringMonthly.moFrAfternoon),
+        availabilityRecurringMonthlySaturdayMorning: toCsvBoolean(volunteer.availability.recurringMonthly.saturdayMorning),
+        availabilityRecurringMonthlySaturdayAfternoon: toCsvBoolean(volunteer.availability.recurringMonthly.saturdayAfternoon),
+        availabilityProjectBasedMoFrMorning: toCsvBoolean(volunteer.availability.projectBased.moFrMorning),
+        availabilityProjectBasedMoFrAfternoon: toCsvBoolean(volunteer.availability.projectBased.moFrAfternoon),
+        availabilityProjectBasedSaturdayMorning: toCsvBoolean(volunteer.availability.projectBased.saturdayMorning),
+        availabilityProjectBasedSaturdayAfternoon: toCsvBoolean(volunteer.availability.projectBased.saturdayAfternoon),
         groups: getGroupNameList(volunteer.groups).join(','),
         notes: volunteer.notes
       }
@@ -223,7 +310,37 @@ export function useVolunteers() {
       const lastname = (safeRow.data.lastname || '').trim()
       const email = (safeRow.data.email || '').trim()
       const phone = (safeRow.data.phone || '').trim()
+      const street = (safeRow.data.street || '').trim()
+      const postalCode = (safeRow.data.postalCode || '').trim()
+      const city = (safeRow.data.city || '').trim()
+      const interests = (safeRow.data.interests || '').trim()
       const notes = (safeRow.data.notes || '').trim()
+      const availability = sanitizeAvailability({
+        oneTime: {
+          moFrMorning: parseCsvBoolean(safeRow.data.availabilityOneTimeMoFrMorning),
+          moFrAfternoon: parseCsvBoolean(safeRow.data.availabilityOneTimeMoFrAfternoon),
+          saturdayMorning: parseCsvBoolean(safeRow.data.availabilityOneTimeSaturdayMorning),
+          saturdayAfternoon: parseCsvBoolean(safeRow.data.availabilityOneTimeSaturdayAfternoon)
+        },
+        recurringWeekly: {
+          moFrMorning: parseCsvBoolean(safeRow.data.availabilityRecurringWeeklyMoFrMorning),
+          moFrAfternoon: parseCsvBoolean(safeRow.data.availabilityRecurringWeeklyMoFrAfternoon),
+          saturdayMorning: parseCsvBoolean(safeRow.data.availabilityRecurringWeeklySaturdayMorning),
+          saturdayAfternoon: parseCsvBoolean(safeRow.data.availabilityRecurringWeeklySaturdayAfternoon)
+        },
+        recurringMonthly: {
+          moFrMorning: parseCsvBoolean(safeRow.data.availabilityRecurringMonthlyMoFrMorning),
+          moFrAfternoon: parseCsvBoolean(safeRow.data.availabilityRecurringMonthlyMoFrAfternoon),
+          saturdayMorning: parseCsvBoolean(safeRow.data.availabilityRecurringMonthlySaturdayMorning),
+          saturdayAfternoon: parseCsvBoolean(safeRow.data.availabilityRecurringMonthlySaturdayAfternoon)
+        },
+        projectBased: {
+          moFrMorning: parseCsvBoolean(safeRow.data.availabilityProjectBasedMoFrMorning),
+          moFrAfternoon: parseCsvBoolean(safeRow.data.availabilityProjectBasedMoFrAfternoon),
+          saturdayMorning: parseCsvBoolean(safeRow.data.availabilityProjectBasedSaturdayMorning),
+          saturdayAfternoon: parseCsvBoolean(safeRow.data.availabilityProjectBasedSaturdayAfternoon)
+        }
+      })
       const groupNames = (safeRow.data.groups || '')
         .split(',')
         .map(name => name.trim())
@@ -268,6 +385,11 @@ export function useVolunteers() {
         lastname,
         email,
         phone,
+        street,
+        postalCode,
+        city,
+        interests,
+        availability,
         notes,
         groups: [...new Set(groupIds)]
       }

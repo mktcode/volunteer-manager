@@ -19,6 +19,9 @@ const columns: TableColumn<VolunteerRow>[] = [
   { accessorKey: 'lastname', header: 'Nachname' },
   { accessorKey: 'email', header: 'E-Mail' },
   { accessorKey: 'phone', header: 'Telefon' },
+  { id: 'address', header: 'Adresse' },
+  { accessorKey: 'interests', header: 'Interesse an' },
+  { id: 'availability', header: 'Verfügbarkeit' },
   { id: 'groups', header: 'Gruppen' },
   { id: 'actions', header: 'Aktionen' }
 ]
@@ -41,6 +44,14 @@ const columns: TableColumn<VolunteerRow>[] = [
 
       <template #groups-cell="{ row }">
         <span>{{ row.original.groupsText || '—' }}</span>
+      </template>
+
+      <template #address-cell="{ row }">
+        <span>{{ [row.original.street, row.original.postalCode, row.original.city].filter(Boolean).join(', ') || '—' }}</span>
+      </template>
+
+      <template #availability-cell="{ row }">
+        <span>{{ row.original.availabilityText || '—' }}</span>
       </template>
 
       <template #actions-cell="{ row }">

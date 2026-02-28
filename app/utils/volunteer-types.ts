@@ -1,9 +1,28 @@
+export interface AvailabilityPeriod {
+  moFrMorning: boolean
+  moFrAfternoon: boolean
+  saturdayMorning: boolean
+  saturdayAfternoon: boolean
+}
+
+export interface Availability {
+  oneTime: AvailabilityPeriod
+  recurringWeekly: AvailabilityPeriod
+  recurringMonthly: AvailabilityPeriod
+  projectBased: AvailabilityPeriod
+}
+
 export interface Volunteer {
   id: string
   firstname: string
   lastname: string
   email: string
   phone: string
+  street: string
+  postalCode: string
+  city: string
+  interests: string
+  availability: Availability
   groups: string[]
   notes: string
 }
@@ -23,6 +42,11 @@ export interface VolunteerInput {
   lastname: string
   email: string
   phone?: string
+  street?: string
+  postalCode?: string
+  city?: string
+  interests?: string
+  availability?: Availability
   groups?: string[]
   notes?: string
 }
@@ -40,6 +64,7 @@ export interface GroupOption {
 
 export interface VolunteerRow extends Volunteer {
   groupsText: string
+  availabilityText: string
 }
 
 export interface CsvRow {
@@ -47,6 +72,26 @@ export interface CsvRow {
   lastname?: string
   email?: string
   phone?: string
+  street?: string
+  postalCode?: string
+  city?: string
+  interests?: string
+  availabilityOneTimeMoFrMorning?: string
+  availabilityOneTimeMoFrAfternoon?: string
+  availabilityOneTimeSaturdayMorning?: string
+  availabilityOneTimeSaturdayAfternoon?: string
+  availabilityRecurringWeeklyMoFrMorning?: string
+  availabilityRecurringWeeklyMoFrAfternoon?: string
+  availabilityRecurringWeeklySaturdayMorning?: string
+  availabilityRecurringWeeklySaturdayAfternoon?: string
+  availabilityRecurringMonthlyMoFrMorning?: string
+  availabilityRecurringMonthlyMoFrAfternoon?: string
+  availabilityRecurringMonthlySaturdayMorning?: string
+  availabilityRecurringMonthlySaturdayAfternoon?: string
+  availabilityProjectBasedMoFrMorning?: string
+  availabilityProjectBasedMoFrAfternoon?: string
+  availabilityProjectBasedSaturdayMorning?: string
+  availabilityProjectBasedSaturdayAfternoon?: string
   groups?: string
   notes?: string
 }

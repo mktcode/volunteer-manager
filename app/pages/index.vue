@@ -40,10 +40,56 @@ const groupOptions = computed<GroupOption[]>(() => {
   }))
 })
 
+function formatAvailabilitySlot(morning: boolean, afternoon: boolean) {
+  if (morning && afternoon) {
+    return 'vormittags/nachmittags'
+  }
+
+  if (morning) {
+    return 'vormittags'
+  }
+
+  if (afternoon) {
+    return 'nachmittags'
+  }
+
+  return ''
+}
+
+function formatAvailability(volunteer: Pick<VolunteerRow, 'availability'>) {
+  const sections = [
+    { label: 'einmalig', key: 'oneTime' },
+    { label: 'wöchentlich', key: 'recurringWeekly' },
+    { label: 'monatlich', key: 'recurringMonthly' },
+    { label: 'projektbezogen', key: 'projectBased' }
+  ] as const
+
+  const textParts: string[] = []
+
+  for (const section of sections) {
+    const period = volunteer.availability[section.key]
+    const moFr = formatAvailabilitySlot(period.moFrMorning, period.moFrAfternoon)
+    const saturday = formatAvailabilitySlot(period.saturdayMorning, period.saturdayAfternoon)
+    const dayParts = [
+      moFr ? `Mo-Fr ${moFr}` : '',
+      saturday ? `Sa ${saturday}` : ''
+    ].filter(Boolean)
+
+    if (!dayParts.length) {
+      continue
+    }
+
+    textParts.push(`${section.label}: ${dayParts.join(' | ')}`)
+  }
+
+  return textParts.join('; ')
+}
+
 const tableRows = computed<VolunteerRow[]>(() => {
   return filteredVolunteers.value.map(volunteer => ({
     ...volunteer,
-    groupsText: getGroupNameList(volunteer.groups).join(', ')
+    groupsText: getGroupNameList(volunteer.groups).join(', '),
+    availabilityText: formatAvailability(volunteer)
   }))
 })
 

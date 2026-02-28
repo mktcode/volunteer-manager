@@ -17,12 +17,13 @@ const emit = defineEmits<{
 
 const selectedGroupIdsForBulk = ref<string[]>([])
 
-function onSelectByGroups() {
-  if (!selectedGroupIdsForBulk.value.length) {
-    return
-  }
+watch(selectedGroupIdsForBulk, (groupIds) => {
+  emit('selectByGroups', [...groupIds])
+})
 
-  emit('selectByGroups', [...selectedGroupIdsForBulk.value])
+function onClearSelection() {
+  selectedGroupIdsForBulk.value = []
+  emit('clearSelection')
 }
 </script>
 
@@ -43,7 +44,7 @@ function onSelectByGroups() {
         label="Auswahl löschen"
         color="neutral"
         variant="soft"
-        @click="emit('clearSelection')"
+        @click="onClearSelection"
       />
     </div>
 
@@ -65,14 +66,6 @@ function onSelectByGroups() {
           {{ option.label }}
         </label>
       </div>
-      <UButton
-        v-if="groupOptions.length > 0"
-        label="aus gewählten Gruppen auswählen"
-        color="neutral"
-        variant="soft"
-        class="w-fit"
-        @click="onSelectByGroups"
-      />
     </div>
 
     <UTextarea

@@ -358,7 +358,7 @@ function onFormError(event?: { errors?: Array<{ name?: string, message: string }
 
         <div class="flex flex-col gap-2">
           <p class="text-muted">
-            Gruppen
+            {{ groupOptions.length > 0 ? 'Gruppen' : 'Noch keine Gruppen vorhanden.' }}
           </p>
           <div class="flex flex-wrap gap-4">
             <label

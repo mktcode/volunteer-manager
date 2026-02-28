@@ -118,58 +118,69 @@ const columns: TableColumn<VolunteerRow>[] = [
       </template>
 
       <template #expanded="{ row }">
-        <div class="grid gap-3 p-3">
-          <div class="rounded border border-default p-3">
-            <p class="mb-2 font-medium text-highlighted">
-              Interesse an
-            </p>
-            <p class="text-sm text-muted">
-              {{ row.original.interests || '—' }}
-            </p>
+        <div class="grid gap-3">
+          <div class="grid gap-3 md:grid-cols-2">
+            <div class="rounded border border-default p-3">
+              <p class="mb-2 font-medium text-highlighted">
+                Interesse an
+              </p>
+              <p class="text-sm text-muted">
+                {{ row.original.interests || '—' }}
+              </p>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <p class="mb-2 font-medium text-highlighted">
+                Notizen
+              </p>
+              <p class="text-sm text-muted">
+                {{ row.original.notes || '—' }}
+              </p>
+            </div>
           </div>
 
           <div class="grid gap-3 md:grid-cols-2">
-          <div
-            v-for="section in availabilitySections"
-            :key="section.key"
-            class="rounded border border-default p-3"
-          >
-            <p class="mb-2 font-medium text-highlighted">
-              {{ section.label }}
-            </p>
+            <div
+              v-for="section in availabilitySections"
+              :key="section.key"
+              class="rounded border border-default p-3"
+            >
+              <p class="mb-2 font-medium text-highlighted">
+                {{ section.label }}
+              </p>
 
-            <div class="flex flex-col gap-2 text-sm text-muted">
-              <div class="flex items-center gap-2">
-                <span>Mo-Fr</span>
-                <div class="flex flex-wrap gap-1">
-                  <UBadge
-                    v-for="label in getAvailabilityLabels(row.original.availability[section.key].moFrMorning, row.original.availability[section.key].moFrAfternoon)"
-                    :key="`mofr-${section.key}-${label}`"
-                    :label="label"
-                    color="primary"
-                    variant="soft"
-                    size="sm"
-                  />
-                  <span v-if="!getAvailabilityLabels(row.original.availability[section.key].moFrMorning, row.original.availability[section.key].moFrAfternoon).length">—</span>
+              <div class="flex flex-col gap-2 text-sm text-muted">
+                <div class="flex items-center gap-2">
+                  <span>Mo-Fr</span>
+                  <div class="flex flex-wrap gap-1">
+                    <UBadge
+                      v-for="label in getAvailabilityLabels(row.original.availability[section.key].moFrMorning, row.original.availability[section.key].moFrAfternoon)"
+                      :key="`mofr-${section.key}-${label}`"
+                      :label="label"
+                      color="primary"
+                      variant="soft"
+                      size="sm"
+                    />
+                    <span v-if="!getAvailabilityLabels(row.original.availability[section.key].moFrMorning, row.original.availability[section.key].moFrAfternoon).length">—</span>
+                  </div>
                 </div>
-              </div>
 
-              <div class="flex items-center gap-2">
-                <span>Samstag</span>
-                <div class="flex flex-wrap gap-1">
-                  <UBadge
-                    v-for="label in getAvailabilityLabels(row.original.availability[section.key].saturdayMorning, row.original.availability[section.key].saturdayAfternoon)"
-                    :key="`sa-${section.key}-${label}`"
-                    :label="label"
-                    color="primary"
-                    variant="soft"
-                    size="sm"
-                  />
-                  <span v-if="!getAvailabilityLabels(row.original.availability[section.key].saturdayMorning, row.original.availability[section.key].saturdayAfternoon).length">—</span>
+                <div class="flex items-center gap-2">
+                  <span>Samstag</span>
+                  <div class="flex flex-wrap gap-1">
+                    <UBadge
+                      v-for="label in getAvailabilityLabels(row.original.availability[section.key].saturdayMorning, row.original.availability[section.key].saturdayAfternoon)"
+                      :key="`sa-${section.key}-${label}`"
+                      :label="label"
+                      color="primary"
+                      variant="soft"
+                      size="sm"
+                    />
+                    <span v-if="!getAvailabilityLabels(row.original.availability[section.key].saturdayMorning, row.original.availability[section.key].saturdayAfternoon).length">—</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
       </template>

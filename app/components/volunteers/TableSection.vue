@@ -102,9 +102,10 @@ const columns: TableColumn<VolunteerRow>[] = [
       <template #expand-cell="{ row }">
         <UButton
           color="neutral"
-          variant="ghost"
-          size="xs"
+          variant="soft"
+          size="lg"
           square
+          class="min-h-7 min-w-7"
           aria-label="Verfügbarkeiten ein-/ausklappen"
           :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
           @click="row.toggleExpanded()"

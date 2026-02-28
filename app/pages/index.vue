@@ -151,9 +151,13 @@ function exportCsv() {
   const csvContent = exportVolunteersToCsv()
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
+  const now = new Date()
+  const today = now.toISOString().slice(0, 10)
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
   const link = document.createElement('a')
   link.href = url
-  link.download = 'freiwillige-helfer-osnabrueck.csv'
+  link.download = `freiwillige-helfer-osnabrueck-${today}-${hours}-${minutes}.csv`
   link.click()
   URL.revokeObjectURL(url)
 }

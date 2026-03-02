@@ -17,3 +17,9 @@ Man könnte ein Formular online bereitstellen, über das sich potenzielle Freiwi
 # Fragen
 
 Um wie viele Helfer handelt es sich potentiell? Ein paar Dutzend? Hunderte?
+
+# TODO:
+
+Anzahl der ausgewählten Helfer anzeigen
+Bei Auswahl nach Gruppe wird bei "Alle"
+Email kopieren bei einzelnen einträgen
